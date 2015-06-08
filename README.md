@@ -1,13 +1,13 @@
 # Sudo
 
-Run a command using sudo, prompting the user with a gui OS dialog if necessary. Good for background applications or native Electron apps that need sudo.
+Run a command using sudo, prompting the user with an OS dialog if necessary. Useful for background applications or native Electron apps that need sudo.
 
 Currently supports native OS dialog prompt on Mac OS X (patches welcome for Linux) and uses process.title as the name of the app requesting permission.
 
 Sudo has no external dependencies and does not contain any native bindings.
 
 ## Usage
-Note that your command should not contain the sudo prefix.
+Note: Your command should not start with the "sudo" prefix.
 ```
 // To run a command using sudo:
 var sudo = require('sudo-prompt');
@@ -22,4 +22,4 @@ sudo.setName('Your app name')
 ```
 
 ## Concurrency
-You can call Sudo.exec and Sudo.touch concurrently, Sudo will batch up permission requests into a single prompt.
+You can call `sudo.exec` and `sudo.touch` concurrently, Sudo will batch up permission requests into a single prompt.
