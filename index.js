@@ -14,13 +14,13 @@ function validName(string) {
   return /^[a-z0-9 ]+$/i.test(string) && string.trim().length > 0;
 }
 
+var Name = undefined;
+
 var Sudo = function(command, end) {
   if (Node.process.platform === 'darwin') return Sudo.Mac(command, end);
   end('Platform not yet supported.');
   // TO DO: Add support for linux.
 };
-
-Sudo.name = undefined;
 
 Sudo.Mac = function(command, end, count) {
   if (count === undefined) count = 0;
@@ -47,7 +47,7 @@ Sudo.Mac = function(command, end, count) {
 
 Sudo.Mac.prompt = function(end) {
   var self = this;
-  var title = Sudo.name || Node.process.title;
+  var title = Name || Node.process.title;
   if (!validName(title)) return end(new Error('Please use sudo.setName(string) to set your app name (process.title contains invalid characters).'));
   var temp = Node.os.tmpdir();
   if (!temp) return end(new Error('Requires os.tmpdir() to be defined.'));
@@ -120,5 +120,5 @@ exports.touch = function(end) {
 
 exports.setName = function(string) {
   if (!validName(string)) throw new Error('Name must be alphanumeric only (spaces are allowed).');
-  Sudo.name = string;
+  Name = string;
 };
