@@ -1,0 +1,24 @@
+{
+  "name": "sudo-prompt",
+  "version": "1.0.0",
+  "description": "Run a command using sudo, prompting the user with an OS dialog if necessary",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jorangreef/sudo.git"
+  },
+  "keywords": [
+    "sudo",
+    "os",
+    "dialog",
+    "prompt",
+    "command",
+    "exec"
+  ],
+  "author": "Joran Dirk Greef",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jorangreef/sudo/issues"
+  },
+  "homepage": "https://github.com/jorangreef/sudo#readme"
+}
