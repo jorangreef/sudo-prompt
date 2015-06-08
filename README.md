@@ -2,6 +2,8 @@
 
 Run a command using sudo, prompting the user with an OS dialog if necessary. Useful for background applications or native Electron apps that need sudo.
 
+![Sudo on Mac OS X for an app called "Ronomon"](osx.png)
+
 Currently supports native OS dialog prompt on Mac OS X (patches welcome for Linux) and uses process.title as the name of the app requesting permission.
 
 Sudo has no external dependencies and does not contain any native bindings.
