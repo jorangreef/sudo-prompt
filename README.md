@@ -1,8 +1,8 @@
 # Sudo
 
-Run a command using sudo, prompting the user with an OS dialog if necessary.
+Run a command using sudo, prompting the user with a gui OS dialog if necessary. Good for background applications or native Electron apps that need sudo.
 
-Currently supports native OS dialog on Mac OS X (patches welcome for Linux).
+Currently supports native OS dialog prompt on Mac OS X (patches welcome for Linux) and uses process.title as the name of the app requesting permission.
 
 Sudo has no external dependencies and does not contain any native bindings.
 
