@@ -1,6 +1,6 @@
 {
   "name": "sudo-prompt",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Run a command using sudo, prompting the user with an OS dialog if necessary",
   "main": "index.js",
   "repository": {
@@ -20,5 +20,6 @@
   "bugs": {
     "url": "https://github.com/jorangreef/sudo/issues"
   },
-  "homepage": "https://github.com/jorangreef/sudo#readme"
+  "homepage": "https://github.com/jorangreef/sudo#readme",
+  "scripts": {}
 }
