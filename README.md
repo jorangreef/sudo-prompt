@@ -34,4 +34,4 @@ sudo.setName('Your app name')
 sudo-prompt should behave just like the `sudo` command in the shell. If your command does not work with the `sudo` command in the shell (perhaps because it uses `>` redirection to a restricted file), then it will not work with sudo-prompt. However, it is still possible to use sudo-prompt to get a privileged shell, [see this issue for more information](https://github.com/jorangreef/sudo/issues/1).
 
 ## Concurrency
-You can call `sudo.exec` and `sudo.touch` concurrently, Sudo will batch up permission requests into a single prompt.
+You can call `sudo.exec` and `sudo.touch` concurrently, and sudo-prompt will batch up permission requests into a single password prompt.
