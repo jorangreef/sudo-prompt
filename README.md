@@ -1,4 +1,4 @@
-## sudo-prompt
+# sudo-prompt
 
 Run a command using sudo, prompting the user with an OS dialog if necessary. Useful for background applications or native Electron apps that need sudo.
 
