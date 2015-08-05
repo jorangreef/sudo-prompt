@@ -110,7 +110,9 @@ Sudo.Mac.prompting = false;
 exports.exec = Sudo;
 
 exports.touch = function(end) {
-  Sudo('echo noop',
+  // This is a convenience method to extend the sudo session.
+  // This uses existing sudo-prompt machinery.
+  Sudo('echo touchingsudotimestamp',
     function(error) {
       if (error) return end(error);
       end();
