@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jorangreef/sudo.git"
+    "url": "git+https://github.com/jorangreef/sudo-prompt.git"
   },
   "keywords": [
     "sudo",
@@ -18,8 +18,8 @@
   "author": "Joran Dirk Greef",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jorangreef/sudo/issues"
+    "url": "https://github.com/jorangreef/sudo-prompt/issues"
   },
-  "homepage": "https://github.com/jorangreef/sudo#readme",
+  "homepage": "https://github.com/jorangreef/sudo-prompt#readme",
   "scripts": {}
 }
