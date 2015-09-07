@@ -18,7 +18,7 @@ var Name = undefined;
 
 var Sudo = function(command, end) {
   if (Node.process.platform === 'darwin') return Sudo.Mac(command, end);
-  end('Platform not yet supported.');
+  end(new Error('Platform not yet supported.'));
   // TO DO: Add support for linux.
 };
 
@@ -37,7 +37,7 @@ Sudo.Mac = function(command, end, count) {
           }
         );
       } else if (!error && /^sudo:/i.test(stderr)) {
-        end('Unexpected stderr from sudo command without corresponding error: ' + stderr);
+        end(new Error('Unexpected stderr from sudo command without corresponding error: ' + stderr));
       } else {
         end(error, stdout, stderr);
       }
