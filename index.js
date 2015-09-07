@@ -29,17 +29,17 @@ Sudo.Mac = function(command, end, count) {
   // Run sudo in non-interactive mode (-n).
   Node.child.exec('sudo -n ' + command,
     function(error, stdout, stderr) {
-      if (error) return end(error);
-      if (stderr !== 'sudo: a password is required\n') {
-        if (/^sudo:/i.test(stderr)) return end(stderr);
-        end(error, stdout, stderr);
-      } else {
+      if (/sudo: a password is required/i.test(stderr)) {
         Sudo.Mac.prompt(
           function(error) {
             if (error) return end(error);
             Sudo.Mac(command, end, ++count); // Cannot use ++ suffix here.
           }
         );
+      } else if (!error && /^sudo:/i.test(stderr)) {
+        end('Unexpected stderr from sudo command without corresponding error: ' + stderr);
+      } else {
+        end(error, stdout, stderr);
       }
     }
   );
