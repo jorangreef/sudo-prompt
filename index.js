@@ -113,9 +113,9 @@ exports.touch = function(end) {
   // This is a convenience method to extend the sudo session.
   // This uses existing sudo-prompt machinery.
   Sudo('echo touchingsudotimestamp',
-    function(error) {
+    function(error, stdout, stderr) {
       if (error) return end(error);
-      end();
+      end(); // Do not pass stdout and stderr back to callback.
     }
   );
 };
