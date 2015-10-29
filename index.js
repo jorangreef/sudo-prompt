@@ -27,7 +27,7 @@ Sudo.Mac = function(command, end, count) {
   if (count >= 2) return end(new Error('Permission denied after several password prompts.'));
   if (/^sudo/i.test(command)) return end(new Error('Command should not contain "sudo".'));
   // Run sudo in non-interactive mode (-n).
-  Node.child.exec('sudo -n ' + command,
+  Node.child.exec('/usr/bin/sudo -n ' + command,
     function(error, stdout, stderr) {
       if (/sudo: a password is required/i.test(stderr)) {
         Sudo.Mac.prompt(
