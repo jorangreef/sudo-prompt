@@ -187,7 +187,7 @@ function macPrompt(hash, options, callback) {
   var source = Node.path.join(Node.path.dirname(module.filename), 'applet.app');
   var target = Node.path.join(temp, hash, options.name + '.app');
   function end(error) {
-    remove(target,
+    remove(Node.path.dirname(target),
       function(errorRemove) {
         if (error) return callback(error);
         if (errorRemove) return callback(errorRemove);
