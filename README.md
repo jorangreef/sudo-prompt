@@ -1,6 +1,6 @@
 # sudo-prompt
 
-Run a command using `sudo`, prompting the user with an OS dialog if necessary. Useful for background applications or native Electron apps that need sudo.
+Run a command using `sudo`, prompting the user with an OS dialog if necessary. Useful for background Node.js applications or native Electron apps that need sudo.
 
 ![A sudo prompt on OS X for an app called "Ronomon"](./osx.png)
 
