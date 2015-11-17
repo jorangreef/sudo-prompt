@@ -23,7 +23,7 @@ function attempt(attempts, command, options, end) {
           // Linux will probably use TTY tickets for sudo timestamps.
           // If so, we cannot easily extend the sudo timestamp for the user.
           // We prefer this since a single prompt can be used for multiple calls.
-          // Instead, we have to use a single prompt for each call.
+          // Instead, we have to use a separate prompt for each call.
           return linux(command, options, end);
         }
         prompt(options,

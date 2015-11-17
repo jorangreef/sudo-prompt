@@ -40,6 +40,6 @@ Just as you should never use `sudo` to launch any graphical applications, you sh
 ## Concurrency
 On OS X, you can issue multiple calls to `sudo.exec` concurrently, and `sudo-prompt` will batch up multiple permission requests into a single password prompt. These calls will be batched to the extent that they share the same `options.name` and `options.icns` arguments (including the actual content of `options.icns` if provided).
 
-On Linux, `sudo` usually has `tty-tickets` enabled. This prevents `sudo-prompt` from batching up multiple permission requests, and will result in a password prompt for each call.
+On Linux, `sudo` usually has `tty-tickets` enabled. This prevents `sudo-prompt` from batching up multiple permission requests, and will result in a separate password prompt for each call.
 
 While `sudo-prompt` may batch up calls, you should never rely on `sudo-prompt` to execute your calls in order. For example, several calls may be waiting on a password prompt, and the next call after the password prompt may execute before any of these calls. If you need to enforce ordering of calls, then you should explicitly order your calls in your application.
