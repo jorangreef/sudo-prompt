@@ -19,14 +19,17 @@ Note: Your command should not start with the `sudo` prefix.
 var sudo = require('sudo-prompt');
 var options = {
   name: 'Ronomon',
-  icns: '/path/to/icns/file' // (optional)
+  icns: '/path/to/icns/file', // (optional)
+  onChildProcess: function(childProcess) {} // (optional)
 };
 sudo.exec('echo hello', options, function(error) {});
 ```
 
 `sudo-prompt` will use `process.title` as `options.name` if `options.name` is not provided. `options.name` must be alphanumeric only (spaces are supported) and at most 70 characters.
 
-*Please note that `sudo.setName()` and `sudo.touch()` have been deprecated to provide a completely functional interface to `exec()`. These calls will be removed in the next release of `sudo-prompt`.*
+If `options.onChildProcess` is provided, then this callback will be called whenever the command is executed, which may be several times if a password prompt is required. For example, `options.onChildProcess` will be called when the command is first run, and if the command fails because of the lack of a sudo session, then `options.onChildProcess` will be called again the next time the command is run after the password prompt.
+
+*Please note that `sudo.setName()` and `sudo.touch()` have been deprecated to provide a completely functional interface to `exec()`. These calls will be removed in the next major release of `sudo-prompt`.*
 
 ## Behavior
 On OS X, `sudo-prompt` should behave just like the `sudo` command in the shell. If your command does not work with the `sudo` command in the shell (perhaps because it uses `>` redirection to a restricted file), then it will not work with `sudo-prompt`. However, it is still possible to use sudo-prompt to get a privileged shell, [see this closed issue for more information](https://github.com/jorangreef/sudo-prompt/issues/1).

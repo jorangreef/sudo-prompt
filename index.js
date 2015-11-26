@@ -15,7 +15,7 @@ function attempt(attempts, command, options, end) {
   // The -n (non-interactive) option prevents sudo from prompting the user for
   // a password. If a password is required for the command to run, sudo will
   // display an error message and exit.
-  Node.child.exec('/usr/bin/sudo -n ' + command,
+  var childProcess = Node.child.exec('/usr/bin/sudo -n ' + command,
     function(error, stdout, stderr) {
       if (/sudo: a password is required/i.test(stderr)) {
         if (attempts > 0) return end(new Error('User did not grant permission.'));
@@ -39,6 +39,7 @@ function attempt(attempts, command, options, end) {
       }
     }
   );
+  if (options.onChildProcess) options.onChildProcess(childProcess);
 }
 
 function copy(source, target, end) {
@@ -107,6 +108,11 @@ function exec() {
       return end(new Error('options.icns must be a non-empty string if provided.'));
     }
   }
+  if (typeof options.onChildProcess !== 'undefined') {
+    if (typeof options.onChildProcess !== 'function') {
+      return end(new Error('options.onChildProcess must be a function if provided.'));
+    }
+  }
   if (Node.process.platform !== 'darwin' && Node.process.platform !== 'linux') {
     return end(new Error('Platform not yet supported.'));
   }
@@ -159,7 +165,7 @@ function linuxExecute(binary, command, options, end) {
     string += '--disable-internal-agent ';
   }
   string += command;
-  Node.child.exec(string,
+  var childProcess = Node.child.exec(string,
     function(error, stdout, stderr) {
       if (error && /Request dismissed|Command failed/i.test(error)) {
         error = new Error('User did not grant permission.');
@@ -167,6 +173,7 @@ function linuxExecute(binary, command, options, end) {
       end(error, stdout, stderr);
     }
   );
+  if (options.onChildProcess) options.onChildProcess(childProcess);
 }
 
 function macIcon(target, options, end) {
