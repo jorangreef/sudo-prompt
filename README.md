@@ -22,7 +22,7 @@ var options = {
   icns: '/path/to/icns/file', // (optional)
   onChildProcess: function(childProcess) {} // (optional)
 };
-sudo.exec('echo hello', options, function(error) {});
+sudo.exec('echo hello', options, function(error, stdout, stderr) {});
 ```
 
 `sudo-prompt` will use `process.title` as `options.name` if `options.name` is not provided. `options.name` must be alphanumeric only (spaces are supported) and at most 70 characters.
