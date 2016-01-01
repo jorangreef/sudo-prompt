@@ -17,7 +17,7 @@ function attempt(attempts, command, options, end) {
   // display an error message and exit.
   var childProcess = Node.child.exec('/usr/bin/sudo -n ' + command,
     function(error, stdout, stderr) {
-      if (/sudo: a password is required/i.test(stderr)) {
+      if (/sudo: /i.test(stderr)) {
         if (attempts > 0) return end(new Error('User did not grant permission.'));
         if (Node.process.platform === 'linux') {
           // Linux will probably use TTY tickets for sudo timestamps.
@@ -32,8 +32,6 @@ function attempt(attempts, command, options, end) {
             attempt(++attempts, command, options, end); // Cannot use ++ suffix here.
           }
         );
-      } else if (!error && /^sudo:/i.test(stderr)) {
-        end(new Error('Unexpected stderr from sudo command without corresponding error: ' + stderr));
       } else {
         end(error, stdout, stderr);
       }
