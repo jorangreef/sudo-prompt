@@ -46,3 +46,10 @@ On OS X, you can issue multiple calls to `sudo.exec` concurrently, and `sudo-pro
 On Linux, `sudo` usually has `tty-tickets` enabled. This prevents `sudo-prompt` from batching up multiple permission requests, and will result in a separate password prompt for each call.
 
 While `sudo-prompt` may batch up calls, you should never rely on `sudo-prompt` to execute your calls in order. For example, several calls may be waiting on a password prompt, and the next call after the password prompt may execute before any of these calls. If you need to enforce ordering of calls, then you should explicitly order your calls in your application.
+
+## Invalidating the timestamp
+You can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
+
+```sh
+$ sudo -k
+```
