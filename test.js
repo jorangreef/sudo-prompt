@@ -20,8 +20,9 @@ kill(
       icns: icns(),
       name: 'Chess'
     };
-    console.log('sudo.exec("echo hello", ' + JSON.stringify(options) + ')');
-    sudo.exec('echo hello', options,
+    var command = 'echo hello';
+    console.log('sudo.exec(' + JSON.stringify(command) + ', ' + JSON.stringify(options) + ')');
+    sudo.exec(command, options,
       function(error, stdout, stderr) {
         console.log('error: ' + error);
         console.log('stdout: ' + JSON.stringify(stdout));

@@ -243,7 +243,15 @@ function MacCommand(instance, end) {
     'MacOS',
     'sudo-prompt-command'
   );
-  Node.fs.writeFile(path, instance.command, 'utf-8', end);
+  var script = [];
+  // Preserve current working directory.
+  // We do this for commands that rely on relative paths.
+  // This runs in a subshell and will not change the cwd of sudo-prompt-script.
+  var cwd = Node.process.cwd();
+  script.push('cd "' + EscapeDoubleQuotes(cwd) + '"');
+  script.push(instance.command);
+  script = script.join('\n');
+  Node.fs.writeFile(path, script, 'utf-8', end);
 }
 
 function MacIcon(instance, end) {
