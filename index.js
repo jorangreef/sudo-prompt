@@ -14,6 +14,8 @@ function Attempt(instance, end) {
   var command = [];
   command.push('/usr/bin/sudo');
   command.push('-n');
+  // Preserve user environment:
+  command.push('-E');
   command.push(instance.command);
   command = command.join(' ');
   Node.child.exec(command,
