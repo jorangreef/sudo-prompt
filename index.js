@@ -275,7 +275,9 @@ function MacOpen(instance, end) {
   var binary = Node.path.join(instance.path, 'Contents', 'MacOS', 'applet');
   // We must set the cwd so that the AppleScript can find the shell scripts.
   var options = { cwd: Node.path.dirname(binary) };
-  Node.child.exec(binary, options, end);
+  // We use the relative path rather than the absolute path. The instance.path
+  // may contain spaces which the cwd can handle, but which exec() cannot.
+  Node.child.exec('./' + Node.path.basename(binary), options, end);
 }
 
 function MacPropertyList(instance, end) {

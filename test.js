@@ -18,7 +18,7 @@ kill(
   function() {
     var options = {
       icns: icns(),
-      name: 'Chess'
+      name: 'Sudo Prompt'
     };
     var command = 'echo hello';
     console.log('sudo.exec(' + JSON.stringify(command) + ', ' + JSON.stringify(options) + ')');
