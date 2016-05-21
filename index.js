@@ -118,6 +118,9 @@ function Linux(instance, end) {
         command.push('--sudo-mode');
         var description = EscapeDoubleQuotes(instance.options.name);
         command.push('--description="' + description + '"');
+        command.push('--');
+      } else if (/kdesudo/i.test(binary)) {
+        command.push('--');
       } else if (/pkexec/i.test(binary)) {
         command.push('--disable-internal-agent');
       }
