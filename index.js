@@ -113,13 +113,7 @@ function Linux(instance, end) {
       if (error) return end(error);
       var command = [];
       command.push('"' + EscapeDoubleQuotes(binary) + '"');
-      if (/gksudo/i.test(binary)) {
-        command.push('--preserve-env');
-        command.push('--sudo-mode');
-        var description = EscapeDoubleQuotes(instance.options.name);
-        command.push('--description="' + description + '"');
-        command.push('--');
-      } else if (/kdesudo/i.test(binary)) {
+      if (/kdesudo/i.test(binary)) {
         command.push('--');
       } else if (/pkexec/i.test(binary)) {
         command.push('--disable-internal-agent');
@@ -140,11 +134,12 @@ function Linux(instance, end) {
 
 function LinuxBinary(instance, end) {
   var index = 0;
-  // We prefer gksudo over pkexec since it enables a better prompt:
-  var paths = ['/usr/bin/gksudo', '/usr/bin/pkexec', '/usr/bin/kdesudo'];
+  // We used to prefer gksudo over pkexec since it enabled a better prompt.
+  // However, gksudo cannot run multiple commands concurrently.
+  var paths = ['/usr/bin/pkexec', '/usr/bin/kdesudo'];
   function test() {
     if (index === paths.length) {
-      return end(new Error('Unable to find gksudo, pkexec or kdesudo.'));
+      return end(new Error('Unable to find pkexec or kdesudo.'));
     }
     var path = paths[index++];
     Node.fs.stat(path,
