@@ -16,6 +16,8 @@ function Attempt(instance, end) {
   command.push('-n');
   // Preserve user environment:
   command.push('-E');
+  // Stop parsing command options:
+  command.push('--');
   command.push(instance.command);
   command = command.join(' ');
   Node.child.exec(command,
