@@ -140,7 +140,7 @@ function LinuxBinary(instance, end) {
   var index = 0;
   // We used to prefer gksudo over pkexec since it enabled a better prompt.
   // However, gksudo cannot run multiple commands concurrently.
-  var paths = ['/usr/bin/pkexec', '/usr/bin/kdesudo'];
+  var paths = ['/usr/bin/kdesudo', '/usr/bin/pkexec'];
   function test() {
     if (index === paths.length) {
       return end(new Error('Unable to find pkexec or kdesudo.'));
