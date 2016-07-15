@@ -9,6 +9,8 @@ var Node = {
 };
 
 function Attempt(instance, end) {
+  var platform = Node.process.platform;
+  if (platform === 'win32') return Windows(instance, end);
   // The -n (non-interactive) option prevents sudo from prompting the user for
   // a password. If a password is required, sudo will return an error and exit.
   var command = [];
@@ -23,7 +25,6 @@ function Attempt(instance, end) {
   Node.child.exec(command,
     function(error, stdout, stderr) {
       if (/sudo: /i.test(stderr)) {
-        var platform = Node.process.platform;
         if (platform === 'linux') {
           return Linux(instance, end);
         } else if (platform === 'darwin') {
@@ -97,7 +98,7 @@ function Exec() {
     }
   }
   var platform = Node.process.platform;
-  if (platform !== 'darwin' && platform !== 'linux') {
+  if (platform !== 'darwin' && platform !== 'linux' && platform !== 'win32') {
     return end(new Error('Platform not yet supported.'));
   }
   var instance = {
@@ -169,10 +170,6 @@ function Mac(instance, callback) {
   UUID(instance,
     function(error, uuid) {
       if (error) return callback(error);
-      if (!uuid || typeof uuid !== 'string' || uuid.length !== 32) {
-        // This is critical to ensure we don't remove the wrong temp directory.
-        return callback(new Error('Expected a valid UUID.'));
-      }
       instance.uuid = uuid;
       instance.path = Node.path.join(
         temp,
@@ -184,7 +181,7 @@ function Mac(instance, callback) {
           function(errorRemove) {
             if (error) return callback(error);
             if (errorRemove) return callback(errorRemove);
-            callback(error, stdout, stderr);
+            callback(undefined, stdout, stderr);
           }
         );
       }
@@ -338,11 +335,20 @@ function MacResult(instance, end) {
 }
 
 function Remove(path, end) {
-  if (!path) return end(new Error('Remove: Path not defined.'));
+  if (typeof path !== 'string' || !path.trim()) {
+    return end(new Error('Argument path not defined.'));
+  }
   var command = [];
-  command.push('/bin/rm');
-  command.push('-rf');
-  command.push('"' + EscapeDoubleQuotes(Node.path.normalize(path)) + '"');
+  if (Node.process.platform === 'win32') {
+    if (/"/.test(path)) {
+      return end(new Error('Argument path cannot contain double-quotes.'));
+    }
+    command.push('rmdir /s /q "' + path + '"');
+  } else {
+    command.push('/bin/rm');
+    command.push('-rf');
+    command.push('"' + EscapeDoubleQuotes(Node.path.normalize(path)) + '"');
+  }
   command = command.join(' ');
   Node.child.exec(command, end);
 }
@@ -356,7 +362,12 @@ function UUID(instance, end) {
       hash.update(instance.options.name);
       hash.update(instance.command);
       hash.update(random);
-      end(undefined, hash.digest('hex').slice(-32));
+      var uuid = hash.digest('hex').slice(-32);
+      if (!uuid || typeof uuid !== 'string' || uuid.length !== 32) {
+        // This is critical to ensure we don't remove the wrong temp directory.
+        return end(new Error('Expected a valid UUID.'));
+      }
+      end(undefined, uuid);
     }
   );
 }
@@ -368,6 +379,189 @@ function ValidName(string) {
   if (string.trim().length === 0) return false;
   if (string.length > 70) return false;
   return true;
+}
+
+function Windows(instance, callback) {
+  var temp = Node.os.tmpdir();
+  if (!temp) return callback(new Error('os.tmpdir() not defined.'));
+  UUID(instance,
+    function(error, uuid) {
+      if (error) return callback(error);
+      instance.uuid = uuid;
+      instance.path = Node.path.join(temp, instance.uuid);
+      if (/"/.test(instance.path)) {
+        // We expect double quotes to be reserved on Windows.
+        // Even so, we test for this and abort if they are present.
+        return callback(
+          new Error('instance.path cannot contain double-quotes.')
+        );
+      }
+      instance.pathElevate = Node.path.join(instance.path, 'elevate.vbs');
+      instance.pathExecute = Node.path.join(instance.path, 'execute.bat');
+      instance.pathCommand = Node.path.join(instance.path, 'command.bat');
+      instance.pathStdout = Node.path.join(instance.path, 'stdout');
+      instance.pathStderr = Node.path.join(instance.path, 'stderr');
+      instance.pathStatus = Node.path.join(instance.path, 'status');
+      Node.fs.mkdir(instance.path,
+        function(error) {
+          if (error) return callback(error);
+          function end(error, stdout, stderr) {
+            Remove(instance.path,
+              function(errorRemove) {
+                if (error) return callback(error);
+                if (errorRemove) return callback(errorRemove);
+                callback(undefined, stdout, stderr);
+              }
+            );
+          }
+          WindowsWriteElevateScript(instance,
+            function(error) {
+              if (error) return end(error);
+              WindowsWriteExecuteScript(instance,
+                function(error) {
+                  if (error) return end(error);
+                  WindowsWriteCommandScript(instance,
+                    function(error) {
+                      if (error) return end(error);
+                      WindowsElevate(instance,
+                        function(error) {
+                          if (error) return end(error);
+                          WindowsWaitForStatus(instance,
+                            function(error) {
+                              if (error) return end(error);
+                              WindowsResult(instance, end);
+                            }
+                          );
+                        }
+                      );
+                    }
+                  );
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+  );
+}
+
+function WindowsElevate(instance, end) {
+  // We used to use this for executing elevate.vbs:
+  // var command = 'cscript.exe //NoLogo "' + instance.pathElevate + '"';
+  var command = [];
+  command.push('powershell.exe');
+  command.push('Start-Process "' + instance.pathExecute + '"');
+  command.push('-WindowStyle hidden');
+  command.push('-Verb runAs');
+  command = command.join(' ');
+  var child = Node.child.exec(command,
+    function(error, stdout, stderr) {
+      if (error) {
+        if (/canceled by the user/i.test(error)) {
+          end(PERMISSION_DENIED);
+        } else {
+          end(error);
+        }
+      } else {
+        end();
+      }
+    }
+  );
+  child.stdin.end(); // Otherwise PowerShell waits indefinitely on Windows 7.
+}
+
+function WindowsResult(instance, end) {
+  Node.fs.readFile(instance.pathStatus, 'utf-8',
+    function(error, code) {
+      if (error) return end(error);
+      Node.fs.readFile(instance.pathStdout, 'utf-8',
+        function(error, stdout) {
+          if (error) return end(error);
+          Node.fs.readFile(instance.pathStderr, 'utf-8',
+            function(error, stderr) {
+              if (error) return end(error);
+              code = parseInt(code.trim(), 10);
+              if (code === 0) {
+                end(undefined, stdout, stderr);
+              } else {
+                error = new Error('Command failed: ' + instance.command);
+                end(error, stdout, stderr);
+              }
+            }
+          );
+        }
+      );
+    }
+  );
+}
+
+function WindowsWaitForStatus(instance, end) {
+  // VBScript cannot wait for the elevated process to finish so we have to poll.
+  // VBScript cannot return error code if user does not grant permission.
+  // PowerShell can be used to elevate and wait on Windows 10.
+  // PowerShell can be used to elevate on Windows 7 but it cannot wait.
+  // powershell.exe Start-Process cmd.exe -Verb runAs -Wait
+  Node.fs.stat(instance.pathStatus,
+    function(error, stats) {
+      if ((error && error.code === 'ENOENT') || stats.size < 2) {
+        // Retry if file does not exist or is not finished writing.
+        // We expect a file size of 2. That should cover at least "0\r".
+        // We use a 1 second timeout to keep a light footprint for long-lived
+        // sudo-prompt processes.
+        setTimeout(
+          function() {
+            WindowsWaitForStatus(instance, end);
+          },
+          1000
+        );
+      } else if (error) {
+        end(error);
+      } else {
+        end();
+      }
+    }
+  );
+}
+
+function WindowsWriteCommandScript(instance, end) {
+  var cwd = Node.process.cwd();
+  if (/"/.test(cwd)) {
+    // We expect double quotes to be reserved on Windows.
+    // Even so, we test for this and abort if they are present.
+    return end(new Error('process.cwd() cannot contain double-quotes.'));
+  }
+  var script = [];
+  script.push('@echo off');
+  script.push('cd "' + cwd + '"');
+  script.push(instance.command);
+  script = script.join('\r\n');
+  Node.fs.writeFile(instance.pathCommand, script, 'utf-8', end);
+}
+
+function WindowsWriteElevateScript(instance, end) {
+  end();
+  // We do not use VBScript to elevate since it does not return an error if
+  // the user does not grant permission. This is here for reference.
+  // var script = [];
+  // script.push('Set objShell = CreateObject("Shell.Application")');
+  // script.push(
+  //   'objShell.ShellExecute "' + instance.pathExecute + '", "", "", "runas", 0'
+  // );
+  // script = script.join('\r\n');
+  // Node.fs.writeFile(instance.pathElevate, script, 'utf-8', end);
+}
+
+function WindowsWriteExecuteScript(instance, end) {
+  var script = [];
+  script.push('@echo off');
+  script.push(
+    'call "' + instance.pathCommand + '"' +
+    ' > "' + instance.pathStdout + '" 2> "' + instance.pathStderr + '"'
+  );
+  script.push('(echo %ERRORLEVEL%) > "' + instance.pathStatus + '"');
+  script = script.join('\r\n');
+  Node.fs.writeFile(instance.pathExecute, script, 'utf-8', end);
 }
 
 module.exports.exec = Exec;

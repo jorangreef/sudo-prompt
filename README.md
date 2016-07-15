@@ -1,14 +1,18 @@
 # sudo-prompt
 
-Run a non-graphical terminal command using `sudo`, prompting the user with a graphical OS dialog if necessary. Useful for background Node.js applications or native Electron apps that need sudo.
+Run a non-graphical terminal command using `sudo`, prompting the user with a graphical OS dialog if necessary. Useful for background Node.js applications or native Electron apps that need `sudo`.
 
-![A sudo prompt on OS X for an app called "Ronomon"](./osx.png)
+## Cross-Platform
+`sudo-prompt` provides a native OS dialog prompt on **OS X**, **Linux** and **Windows**.
 
-`sudo-prompt` provides a native OS dialog prompt on **OS X** and **Linux** with custom name and optional icon.
+![OS X](./osx.png)
 
-`sudo-prompt` has no external dependencies and does not require any native bindings.
+![Linux](./linux.png)
+
+![Windows](./windows.png)
 
 ## Installation
+`sudo-prompt` has no external dependencies and does not require any native bindings.
 ```
 npm install sudo-prompt
 ```
@@ -18,8 +22,8 @@ Note: Your command should not start with the `sudo` prefix.
 ```
 var sudo = require('sudo-prompt');
 var options = {
-  name: 'Ronomon',
-  icns: '/path/to/icns/file', // (optional)
+  name: 'Electron',
+  icns: '/Applications/Electron.app/Contents/Resources/Electron.icns', // (optional)
 };
 sudo.exec('echo hello', options, function(error, stdout, stderr) {});
 ```
@@ -33,6 +37,8 @@ On OS X, `sudo-prompt` should behave just like the `sudo` command in the shell. 
 
 On Linux, `sudo-prompt` will use either `pkexec` or `kdesudo` to show the password prompt and run your command. Where possible, `sudo-prompt` will try and get these to mimic `sudo`. Depending on which binary is used, and due to the limitations of some binaries, the name of your program or the command itself may be displayed to your user. Passing `options.icns` is currently not supported by `sudo-prompt` on Linux. Patches are welcome to add support for icons based on `polkit`.
 
+On Windows, `sudo-prompt` will elevate your command using User Account Control (UAC). Passing `options.name` or `options.icns` is currently not supported by `sudo-prompt` on Windows.
+
 ## Non-graphical terminal commands only
 Just as you should never use `sudo` to launch any graphical applications, you should never use `sudo-prompt` to launch any graphical applications. Doing so could cause files in your home directory to become owned by root. `sudo-prompt` is explicitly designed to launch non-graphical terminal commands. For more information, [read this post](http://www.psychocats.net/ubuntu/graphicalsudo).
 
@@ -42,7 +48,7 @@ On systems where the user has opted to have `tty-tickets` enabled, each call to 
 You should never rely on `sudo-prompt` to execute your calls in order. If you need to enforce ordering of calls, then you should explicitly order your calls in your application. Where your commands are short-lived, you should queue your calls to `exec()` to make sure your user is not overloaded with password prompts.
 
 ## Invalidating the timestamp
-You can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
+On OS X and Linux, you can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
 
 ```sh
 $ sudo -k

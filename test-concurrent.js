@@ -2,6 +2,7 @@ var sudo = require('./');
 var exec = require('child_process').exec;
 
 function kill(end) {
+  if (process.platform === 'win32') return end();
   exec('sudo -k', end);
 }
 kill(
@@ -9,7 +10,12 @@ kill(
     var options = {
       name: 'Sudo Prompt'
     };
-    sudo.exec('sleep 10 && echo world', options,
+    if (process.platform === 'win32') {
+      var sleep = 'timeout /t 10\r\necho world';
+    } else {
+      var sleep = 'sleep 10 && echo world';
+    }
+    sudo.exec(sleep, options,
       function(error, stdout, stderr) {
         console.log(error, stdout, stderr);
       }
