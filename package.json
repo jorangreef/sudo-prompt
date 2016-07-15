@@ -13,7 +13,13 @@
     "dialog",
     "prompt",
     "command",
-    "exec"
+    "exec",
+    "user access control",
+    "UAC",
+    "privileges",
+    "administrative",
+    "elevate",
+    "run as administrator"
   ],
   "author": "Joran Dirk Greef",
   "license": "MIT",
