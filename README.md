@@ -3,9 +3,9 @@
 Run a non-graphical terminal command using `sudo`, prompting the user with a graphical OS dialog if necessary. Useful for background Node.js applications or native Electron apps that need `sudo`.
 
 ## Cross-Platform
-`sudo-prompt` provides a native OS dialog prompt on **OS X**, **Linux** and **Windows**.
+`sudo-prompt` provides a native OS dialog prompt on **macOS**, **Linux** and **Windows**.
 
-![OS X](./osx.png)
+![macOS](./macos.png)
 
 ![Linux](./linux.png)
 
@@ -33,7 +33,7 @@ sudo.exec('echo hello', options, function(error, stdout, stderr) {});
 Your command should not depend on any current working directory or environment variables in order to execute correctly, and you should take care to use absolute paths and not relative paths.
 
 ## Behavior
-On OS X, `sudo-prompt` should behave just like the `sudo` command in the shell. If your command does not work with the `sudo` command in the shell (perhaps because it uses `>` redirection to a restricted file), then it may not work with `sudo-prompt`. However, it is still possible to use sudo-prompt to get a privileged shell, [see this closed issue for more information](https://github.com/jorangreef/sudo-prompt/issues/1).
+On macOS, `sudo-prompt` should behave just like the `sudo` command in the shell. If your command does not work with the `sudo` command in the shell (perhaps because it uses `>` redirection to a restricted file), then it may not work with `sudo-prompt`. However, it is still possible to use sudo-prompt to get a privileged shell, [see this closed issue for more information](https://github.com/jorangreef/sudo-prompt/issues/1).
 
 On Linux, `sudo-prompt` will use either `pkexec` or `kdesudo` to show the password prompt and run your command. Where possible, `sudo-prompt` will try and get these to mimic `sudo`. Depending on which binary is used, and due to the limitations of some binaries, the name of your program or the command itself may be displayed to your user. `sudo-prompt` will not use `gksudo` since `gksudo` does not support concurrent prompts. Passing `options.icns` is currently not supported by `sudo-prompt` on Linux. Patches are welcome to add support for icons based on `polkit`.
 
@@ -48,7 +48,7 @@ On systems where the user has opted to have `tty-tickets` enabled, each call to 
 You should never rely on `sudo-prompt` to execute your calls in order. If you need to enforce ordering of calls, then you should explicitly order your calls in your application. Where your commands are short-lived, you should queue your calls to `exec()` to make sure your user is not overloaded with password prompts.
 
 ## Invalidating the timestamp
-On OS X and Linux, you can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
+On macOS and Linux, you can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
 
 ```sh
 $ sudo -k
