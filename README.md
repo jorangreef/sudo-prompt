@@ -19,7 +19,7 @@ npm install sudo-prompt
 
 ## Usage
 Note: Your command should not start with the `sudo` prefix.
-```
+```javascript
 var sudo = require('sudo-prompt');
 var options = {
   name: 'Electron',
