@@ -326,7 +326,10 @@ function MacResult(instance, end) {
                 if (code === 0) {
                   end(undefined, stdout, stderr);
                 } else {
-                  error = new Error('Command failed: ' + instance.command);
+                  error = new Error(
+                    'Command failed: ' + instance.command + '\n' + stderr
+                  );
+                  error.code = code;
                   end(error, stdout, stderr);
                 }
               }
@@ -489,7 +492,10 @@ function WindowsResult(instance, end) {
               if (code === 0) {
                 end(undefined, stdout, stderr);
               } else {
-                error = new Error('Command failed: ' + instance.command);
+                error = new Error(
+                  'Command failed: ' + instance.command + '\r\n' + stderr
+                );
+                error.code = code;
                 end(error, stdout, stderr);
               }
             }
