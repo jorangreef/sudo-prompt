@@ -527,7 +527,15 @@ function WindowsWaitForStatus(instance, end) {
         // sudo-prompt processes.
         setTimeout(
           function() {
-            WindowsWaitForStatus(instance, end);
+            // If administrator has no password and user clicks Yes, then
+            // PowerShell returns no error and execute (and command) never runs.
+            // We check that command output has been redirected to stdout file:
+            Node.fs.stat(instance.pathStdout,
+              function(error) {
+                if (error) return end(PERMISSION_DENIED);
+                WindowsWaitForStatus(instance, end);
+              }
+            );
           },
           1000
         );
