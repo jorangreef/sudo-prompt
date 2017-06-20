@@ -458,7 +458,13 @@ function WindowsElevate(instance, end) {
   // var command = 'cscript.exe //NoLogo "' + instance.pathElevate + '"';
   var command = [];
   command.push('powershell.exe');
-  command.push('Start-Process "' + instance.pathExecute + '"');
+  command.push('Start-Process');
+  command.push('-FilePath');
+  // Escape characters for cmd using double quotes:
+  // Escape characters for PowerShell using single quotes:
+  // Escape single quotes for PowerShell using backtick:
+  // See: https://ss64.com/ps/syntax-esc.html
+  command.push('"\'' + instance.pathExecute.replace(/'/g, "`'") + '\'"');
   command.push('-WindowStyle hidden');
   command.push('-Verb runAs');
   command = command.join(' ');
