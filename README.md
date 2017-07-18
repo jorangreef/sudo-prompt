@@ -25,12 +25,19 @@ var options = {
   name: 'Electron',
   icns: '/Applications/Electron.app/Contents/Resources/Electron.icns', // (optional)
 };
-sudo.exec('echo hello', options, function(error, stdout, stderr) {});
+sudo.exec('echo hello', options,
+  function(error, stdout, stderr) {
+    if (error) throw error;
+    console.log('stdout: ' + stdout);
+  }
+);
 ```
 
 `sudo-prompt` will use `process.title` as `options.name` if `options.name` is not provided. `options.name` must be alphanumeric only (spaces are supported) and at most 70 characters.
 
 Your command should not depend on any current working directory or environment variables in order to execute correctly, and you should take care to use absolute paths and not relative paths.
+
+**`sudo-prompt.exec()` is different to `child-process.exec()` in that no child process is returned (due to platform and permissions constraints).**
 
 ## Behavior
 On macOS, `sudo-prompt` should behave just like the `sudo` command in the shell. If your command does not work with the `sudo` command in the shell (perhaps because it uses `>` redirection to a restricted file), then it may not work with `sudo-prompt`. However, it is still possible to use sudo-prompt to get a privileged shell, [see this closed issue for more information](https://github.com/jorangreef/sudo-prompt/issues/1).
