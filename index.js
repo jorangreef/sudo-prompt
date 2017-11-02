@@ -557,6 +557,8 @@ function WindowsWriteCommandScript(instance, end) {
   }
   var script = [];
   script.push('@echo off');
+  // Set code page to UTF-8:
+  script.push('chcp 65001>nul');
   script.push('cd "' + cwd + '"');
   script.push(instance.command);
   script = script.join('\r\n');
