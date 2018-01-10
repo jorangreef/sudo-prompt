@@ -22,7 +22,7 @@ function Attempt(instance, end) {
   command.push('--');
   command.push(instance.command);
   command = command.join(' ');
-  Node.child.exec(command,
+  Node.child.exec(command, { maxBuffer: MAX_BUFFER },
     function(error, stdout, stderr) {
       if (/sudo: /i.test(stderr)) {
         if (platform === 'linux') {
@@ -125,7 +125,7 @@ function Linux(instance, end) {
       }
       command.push(instance.command);
       command = command.join(' ');
-      Node.child.exec(command,
+      Node.child.exec(command, { maxBuffer: MAX_BUFFER },
         function(error, stdout, stderr) {
           if (error) {
             if (/No authentication agent found/.test(stderr)) {
@@ -602,3 +602,6 @@ var APPLET = 'UEsDBAoAAAAAAO1YcEcAAAAAAAAAAAAAAAAJABwAQ29udGVudHMvVVQJAAPNnElWLZ
 
 var PERMISSION_DENIED = 'User did not grant permission.';
 var NO_POLKIT_AGENT = 'No polkit authentication agent found.';
+
+// See issue 66:
+var MAX_BUFFER = 134217728;
