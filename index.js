@@ -559,7 +559,8 @@ function WindowsWriteCommandScript(instance, end) {
   script.push('@echo off');
   // Set code page to UTF-8:
   script.push('chcp 65001>nul');
-  script.push('cd "' + cwd + '"');
+  // We pass /d as an option in case the cwd is on another drive (issue 70):
+  script.push('cd /d "' + cwd + '"');
   script.push(instance.command);
   script = script.join('\r\n');
   Node.fs.writeFile(instance.pathCommand, script, 'utf-8', end);
