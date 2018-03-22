@@ -1,6 +1,6 @@
 {
   "name": "sudo-prompt",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "Run a command using sudo, prompting the user with an OS dialog if necessary",
   "main": "index.js",
   "repository": {
