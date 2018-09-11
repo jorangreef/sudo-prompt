@@ -10,33 +10,10 @@ var Node = {
 
 function Attempt(instance, end) {
   var platform = Node.process.platform;
+  if (platform === 'darwin') return Mac(instance, end);
+  if (platform === 'linux') return Linux(instance, end);
   if (platform === 'win32') return Windows(instance, end);
-  // The -n (non-interactive) option prevents sudo from prompting the user for
-  // a password. If a password is required, sudo will return an error and exit.
-  var command = [];
-  command.push('/usr/bin/sudo');
-  command.push('-n');
-  // Preserve user environment:
-  command.push('-E');
-  // Stop parsing command options:
-  command.push('--');
-  command.push(instance.command);
-  command = command.join(' ');
-  Node.child.exec(command, { maxBuffer: MAX_BUFFER },
-    function(error, stdout, stderr) {
-      if (/sudo: /i.test(stderr)) {
-        if (platform === 'linux') {
-          return Linux(instance, end);
-        } else if (platform === 'darwin') {
-          return Mac(instance, end);
-        } else {
-          end(new Error('Platform not yet supported.'));
-        }
-      } else {
-        end(error, stdout, stderr);
-      }
-    }
-  );
+  end(new Error('Platform not yet supported.'));
 }
 
 function EscapeDoubleQuotes(string) {
