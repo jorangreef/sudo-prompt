@@ -50,9 +50,9 @@ On Windows, `sudo-prompt` will elevate your command using User Account Control (
 Just as you should never use `sudo` to launch any graphical applications, you should never use `sudo-prompt` to launch any graphical applications. Doing so could cause files in your home directory to become owned by root. `sudo-prompt` is explicitly designed to launch non-graphical terminal commands. For more information, [read this post](http://www.psychocats.net/ubuntu/graphicalsudo).
 
 ## Concurrency
-On systems where the user has opted to have `tty-tickets` enabled, each call to `exec()` will result in a separate password prompt. Where `tty-tickets` are disabled, subsequent calls to `exec()` (but not concurrent calls) will not require a password prompt, so long as the user's `sudo` timestamp file remains valid.
+On systems where the user has opted to have `tty-tickets` enabled (most systems), each call to `exec()` will result in a separate password prompt. Where `tty-tickets` are disabled, subsequent calls to `exec()` will still require a password prompt, even where the user's `sudo` timestamp file remains valid, due to edge cases with `sudo` itself, [https://github.com/jorangreef/sudo-prompt/pull/76](see this discussion for more information).
 
-You should never rely on `sudo-prompt` to execute your calls in order. If you need to enforce ordering of calls, then you should explicitly order your calls in your application. Where your commands are short-lived, you should queue your calls to `exec()` to make sure your user is not overloaded with password prompts.
+You should never rely on `sudo-prompt` to execute your calls in order. If you need to enforce ordering of calls, then you should explicitly order your calls in your application. Where your commands are short-lived, you should always queue your calls to `exec()` to make sure your user is not overloaded with password prompts.
 
 ## Invalidating the timestamp
 On macOS and Linux, you can invalidate the user's `sudo` timestamp file to force the prompt to appear by running the following command in your terminal:
