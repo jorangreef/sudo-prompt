@@ -401,24 +401,19 @@ function Windows(instance, callback) {
               }
             );
           }
-          WindowsWriteElevateScript(instance,
+          WindowsWriteExecuteScript(instance,
             function(error) {
               if (error) return end(error);
-              WindowsWriteExecuteScript(instance,
+              WindowsWriteCommandScript(instance,
                 function(error) {
                   if (error) return end(error);
-                  WindowsWriteCommandScript(instance,
+                  WindowsElevate(instance,
                     function(error) {
                       if (error) return end(error);
-                      WindowsElevate(instance,
+                      WindowsWaitForStatus(instance,
                         function(error) {
                           if (error) return end(error);
-                          WindowsWaitForStatus(instance,
-                            function(error) {
-                              if (error) return end(error);
-                              WindowsResult(instance, end);
-                            }
-                          );
+                          WindowsResult(instance, end);
                         }
                       );
                     }
@@ -547,7 +542,6 @@ function WindowsWriteCommandScript(instance, end) {
 }
 
 function WindowsWriteElevateScript(instance, end) {
-  end();
   // We do not use VBScript to elevate since it does not return an error if
   // the user does not grant permission. This is here for reference.
   // var script = [];
