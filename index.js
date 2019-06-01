@@ -94,9 +94,10 @@ function Linux(instance, end) {
       var command = [];
       command.push('"' + EscapeDoubleQuotes(binary) + '"');
       if (/kdesudo/i.test(binary)) {
-        var reason = 'wants to make changes. Type your password to allow this.';
         command.push(
-          '--comment', '"' + instance.options.name + ' ' + reason + '"'
+          '--comment',
+          '"' + instance.options.name + ' wants to make changes. ' +
+          'Enter your password to allow this."'
         );
         command.push('-d'); // Do not show the command to be run in the dialog.
         command.push('--');
