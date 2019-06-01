@@ -20,16 +20,23 @@ function icns() {
 kill(
   function() {
     var options = {
+      env: { 'SUDO_PROMPT_TEST_ENV': 'hello world' },
       icns: icns(),
       name: 'Electron'
     };
-    var command = 'echo hello';
     if (process.platform === 'win32') {
-      var expected = 'hello\r\n';
+      var command = 'echo %SUDO_PROMPT_TEST_ENV%';
+      var expected = 'hello world\r\n';
     } else {
-      var expected = 'hello\n';
+      var command = 'echo $SUDO_PROMPT_TEST_ENV';
+      var expected = 'hello world\n';
     }
-    console.log('sudo.exec(' + JSON.stringify(command) + ', ' + JSON.stringify(options) + ')');
+    console.log(
+      'sudo.exec(' +
+        JSON.stringify(command) + ', ' +
+        JSON.stringify(options) +
+      ')'
+    );
     sudo.exec(command, options,
       function(error, stdout, stderr) {
         console.log('error: ' + error);
