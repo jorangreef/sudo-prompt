@@ -507,7 +507,7 @@ function WindowsWaitForStatus(instance, end) {
             // We check that command output has been redirected to stdout file:
             Node.fs.stat(instance.pathStdout,
               function(error) {
-                if (error) return end(PERMISSION_DENIED);
+                if (error) return end(new Error(PERMISSION_DENIED));
                 WindowsWaitForStatus(instance, end);
               }
             );
