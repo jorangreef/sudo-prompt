@@ -94,7 +94,7 @@ function Linux(instance, end) {
       var command = [];
       command.push('"' + EscapeDoubleQuotes(binary) + '"');
       if (/kdesudo/i.test(binary)) {
-        var reason = 'needs administrative privileges. Please enter your password.';
+        var reason = 'wants to make changes. Type your password to allow this.';
         command.push('--comment', '"' + instance.options.name + ' ' + reason + '"');
         command.push('--');
       } else if (/pkexec/i.test(binary)) {
