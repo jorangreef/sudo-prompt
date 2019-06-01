@@ -95,7 +95,9 @@ function Linux(instance, end) {
       command.push('"' + EscapeDoubleQuotes(binary) + '"');
       if (/kdesudo/i.test(binary)) {
         var reason = 'wants to make changes. Type your password to allow this.';
-        command.push('--comment', '"' + instance.options.name + ' ' + reason + '"');
+        command.push(
+          '--comment', '"' + instance.options.name + ' ' + reason + '"'
+        );
         command.push('-d'); // Do not show the command to be run in the dialog.
         command.push('--');
       } else if (/pkexec/i.test(binary)) {
@@ -551,7 +553,7 @@ function WindowsWriteElevateScript(instance, end) {
   // var script = [];
   // script.push('Set objShell = CreateObject("Shell.Application")');
   // script.push(
-  //   'objShell.ShellExecute "' + instance.pathExecute + '", "", "", "runas", 0'
+  // 'objShell.ShellExecute "' + instance.pathExecute + '", "", "", "runas", 0'
   // );
   // script = script.join('\r\n');
   // Node.fs.writeFile(instance.pathElevate, script, 'utf-8', end);
