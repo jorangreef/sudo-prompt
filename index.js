@@ -74,6 +74,44 @@ function Exec() {
       return end(new Error('options.icns must not be empty if provided.'));
     }
   }
+  if (typeof options.env !== 'undefined') {
+    if (typeof options.env !== 'object') {
+      return end(new Error('options.env must be an object if provided.'));
+    } else if (Object.keys(options.env).length === 0) {
+      return end(new Error('options.env must not be empty if provided.'));
+    } else {
+      for (var key in options.env) {
+        var value = options.env[key];
+        if (typeof key !== 'string' || typeof value !== 'string') {
+          return end(
+            new Error('options.env environment variables must be strings.')
+          );
+        }
+        // "Environment variable names used by the utilities in the Shell and
+        // Utilities volume of IEEE Std 1003.1-2001 consist solely of uppercase
+        // letters, digits, and the '_' (underscore) from the characters defined
+        // in Portable Character Set and do not begin with a digit. Other
+        // characters may be permitted by an implementation; applications shall
+        // tolerate the presence of such names."
+        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
+          return end(
+            new Error(
+              'options.env has an invalid environment variable name: ' +
+              JSON.stringify(key)
+            )
+          );
+        }
+        if (/[\r\n]/.test(value)) {
+          return end(
+            new Error(
+              'options.env has an invalid environment variable value: ' +
+              JSON.stringify(value)
+            )
+          );
+        }
+      }
+    }
+  }
   var platform = Node.process.platform;
   if (platform !== 'darwin' && platform !== 'linux' && platform !== 'win32') {
     return end(new Error('Platform not yet supported.'));
@@ -235,6 +273,11 @@ function MacCommand(instance, end) {
   // This runs in a subshell and will not change the cwd of sudo-prompt-script.
   var cwd = Node.process.cwd();
   script.push('cd "' + EscapeDoubleQuotes(cwd) + '"');
+  // Export environment variables:
+  for (var key in instance.options.env) {
+    var value = EscapeDoubleQuotes(instance.options.env[key]);
+    script.push('export ' + key + '="' + value + '"');
+  }
   script.push(instance.command);
   script = script.join('\n');
   Node.fs.writeFile(path, script, 'utf-8', end);
@@ -533,8 +576,21 @@ function WindowsWriteCommandScript(instance, end) {
   script.push('@echo off');
   // Set code page to UTF-8:
   script.push('chcp 65001>nul');
-  // We pass /d as an option in case the cwd is on another drive (issue 70):
+  // Preserve current working directory:
+  // We pass /d as an option in case the cwd is on another drive (issue 70).
   script.push('cd /d "' + cwd + '"');
+  // Export environment variables:
+  for (var key in instance.options.env) {
+    // "The characters <, >, |, &, ^ are special command shell characters, and
+    // they must be preceded by the escape character (^) or enclosed in
+    // quotation marks. If you use quotation marks to enclose a string that
+    // contains one of the special characters, the quotation marks are set as
+    // part of the environment variable value."
+    // In other words, Windows assigns everything that follows the equals sign
+    // to the value of the variable, whereas Unix systems ignore double quotes.
+    var value = instance.options.env[key].replace(/([<>\\|&^])/g, '^$1');
+    script.push('set ' + key + '=' + value);
+  }
   script.push(instance.command);
   script = script.join('\r\n');
   Node.fs.writeFile(instance.pathCommand, script, 'utf-8', end);
