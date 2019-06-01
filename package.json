@@ -4,16 +4,12 @@
   "description": "Run a command using sudo, prompting the user with an OS dialog if necessary",
   "main": "index.js",
   "files": [
-    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "index.js",
-    "linux.png",
-    "macos.png",
     "package.json",
-    "test-concurrent.js",
     "test.js",
-    "windows.png"
+    "test-concurrent.js"
   ],
   "repository": {
     "type": "git",
