@@ -445,15 +445,13 @@ function WindowsElevate(instance, end) {
   command = command.join(' ');
   var child = Node.child.exec(command,
     function(error, stdout, stderr) {
-      if (error) {
-        if (/canceled by the user/i.test(error)) {
-          end(PERMISSION_DENIED);
-        } else {
-          end(error);
-        }
-      } else {
-        end();
-      }
+      // We used to return PERMISSION_DENIED only for error messages containing
+      // the string 'canceled by the user'. However, Windows internationalizes
+      // error messages (issue 96) so now we must assume all errors here are
+      // permission errors. This seems reasonable, given that we already run the
+      // user's command in a subshell.
+      if (error) return end(new Error(PERMISSION_DENIED));
+      end();
     }
   );
   child.stdin.end(); // Otherwise PowerShell waits indefinitely on Windows 7.
