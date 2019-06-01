@@ -96,6 +96,7 @@ function Linux(instance, end) {
       if (/kdesudo/i.test(binary)) {
         var reason = 'wants to make changes. Type your password to allow this.';
         command.push('--comment', '"' + instance.options.name + ' ' + reason + '"');
+        command.push('-d'); // Do not show the command to be run in the dialog.
         command.push('--');
       } else if (/pkexec/i.test(binary)) {
         command.push('--disable-internal-agent');
