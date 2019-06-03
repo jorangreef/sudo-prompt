@@ -1,3 +1,4 @@
+var assert = require('assert');
 var fs = require('fs');
 var sudo = require('./');
 var exec = require('child_process').exec;
@@ -43,13 +44,18 @@ kill(
         console.log('error:', error);
         console.log('stdout: ' + JSON.stringify(stdout));
         console.log('stderr: ' + JSON.stringify(stderr));
+        assert(error === undefined || typeof error === 'object');
+        assert(stdout === undefined || typeof stdout === 'string');
+        assert(stderr === undefined || typeof stderr === 'string');
         kill(
           function() {
             if (error) throw error;
             if (stdout !== expected) {
               throw new Error('stdout != ' + JSON.stringify(expected));
             }
-            if (stderr !== "") throw new Error('stderr != ""');
+            if (stderr !== '') {
+              throw new Error('stderr != ""');
+            }
             console.log('OK');
           }
         );

@@ -156,7 +156,7 @@ function Linux(instance, end) {
         '"'
       );
       command = command.join(' ');
-      Node.child.exec(command, { maxBuffer: MAX_BUFFER },
+      Node.child.exec(command, { encoding: 'utf-8', maxBuffer: MAX_BUFFER },
         function(error, stdout, stderr) {
           // ISSUE 88:
           // We must distinguish between elevation errors and command errors.
@@ -244,20 +244,20 @@ function Mac(instance, callback) {
         );
       }
       MacApplet(instance,
-        function(error) {
-          if (error) return end(error);
+        function(error, stdout, stderr) {
+          if (error) return end(error, stdout, stderr);
           MacIcon(instance,
             function(error) {
               if (error) return end(error);
               MacPropertyList(instance,
-                function(error) {
-                  if (error) return end(error);
+                function(error, stdout, stderr) {
+                  if (error) return end(error, stdout, stderr);
                   MacCommand(instance,
                     function(error) {
                       if (error) return end(error);
                       MacOpen(instance,
-                        function(error) {
-                          if (error) return end(error);
+                        function(error, stdout, stderr) {
+                          if (error) return end(error, stdout, stderr);
                           MacResult(instance, end);
                         }
                       );
@@ -288,7 +288,7 @@ function MacApplet(instance, end) {
           command.push('"' + EscapeDoubleQuotes(zip) + '"');
           command.push('-d "' + EscapeDoubleQuotes(instance.path) + '"');
           command = command.join(' ');
-          Node.child.exec(command, end);
+          Node.child.exec(command, { encoding: 'utf-8' }, end);
         }
       );
     }
@@ -337,7 +337,10 @@ function MacOpen(instance, end) {
   // We must run the binary directly so that the cwd will apply.
   var binary = Node.path.join(instance.path, 'Contents', 'MacOS', 'applet');
   // We must set the cwd so that the AppleScript can find the shell scripts.
-  var options = { cwd: Node.path.dirname(binary) };
+  var options = {
+    cwd: Node.path.dirname(binary),
+    encoding: 'utf-8'
+  };
   // We use the relative path rather than the absolute path. The instance.path
   // may contain spaces which the cwd can handle, but which exec() cannot.
   Node.child.exec('./' + Node.path.basename(binary), options, end);
@@ -363,7 +366,7 @@ function MacPropertyList(instance, end) {
   command.push('"' + key + '"');
   command.push("'" + value + "'"); // We must use single quotes for value.
   command = command.join(' ');
-  Node.child.exec(command, end);
+  Node.child.exec(command, { encoding: 'utf-8' }, end);
 }
 
 function MacResult(instance, end) {
@@ -415,7 +418,7 @@ function Remove(path, end) {
     command.push('"' + EscapeDoubleQuotes(Node.path.normalize(path)) + '"');
   }
   command = command.join(' ');
-  Node.child.exec(command, end);
+  Node.child.exec(command, { encoding: 'utf-8' }, end);
 }
 
 function UUID(instance, end) {
@@ -486,8 +489,8 @@ function Windows(instance, callback) {
                 function(error) {
                   if (error) return end(error);
                   WindowsElevate(instance,
-                    function(error) {
-                      if (error) return end(error);
+                    function(error, stdout, stderr) {
+                      if (error) return end(error, stdout, stderr);
                       WindowsWaitForStatus(instance,
                         function(error) {
                           if (error) return end(error);
@@ -521,14 +524,14 @@ function WindowsElevate(instance, end) {
   command.push('-WindowStyle hidden');
   command.push('-Verb runAs');
   command = command.join(' ');
-  var child = Node.child.exec(command,
+  var child = Node.child.exec(command, { encoding: 'utf-8' },
     function(error, stdout, stderr) {
       // We used to return PERMISSION_DENIED only for error messages containing
       // the string 'canceled by the user'. However, Windows internationalizes
       // error messages (issue 96) so now we must assume all errors here are
       // permission errors. This seems reasonable, given that we already run the
       // user's command in a subshell.
-      if (error) return end(new Error(PERMISSION_DENIED));
+      if (error) return end(new Error(PERMISSION_DENIED), stdout, stderr);
       end();
     }
   );
