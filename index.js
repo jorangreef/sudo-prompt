@@ -175,7 +175,7 @@ function Linux(instance, end) {
           //
           // However, we do not rely on pkexec's return of 127 since our magic
           // marker is more reliable, and we already use it for kdesudo.
-          var elevated = stdout ? stdout.toString('utf8', 0, magic.length) : '';
+          var elevated = stdout && stdout.slice(0, magic.length) === magic;
           if (elevated) stdout = stdout.slice(magic.length);
           // Only normalize the error if it is definitely not a command error:
           // In other words, if we know that the command was never elevated.
