@@ -1,3 +1,33 @@
+## [9.0.0] 2019-06-03
+
+### Changed
+
+- Make cross-platform `stdout`, `stderr` behavior consistent, see
+[#89](https://github.com/jorangreef/sudo-prompt/issues/89).
+
+- Preserve current working directory on all platforms.
+
+- Improve kdesudo dialog appearance.
+
+### Added
+
+- Add `options.env` to set environment variables on all platforms, see
+[#91](https://github.com/jorangreef/sudo-prompt/issues/91).
+
+### Fixed
+
+- Always return PERMISSION_DENIED as an Error object.
+
+- Support multiple commands separated by semicolons on Linux, see
+[#39](https://github.com/jorangreef/sudo-prompt/issues/39).
+
+- Distinguish between elevation errors and command errors on Linux, see
+[#88](https://github.com/jorangreef/sudo-prompt/issues/88).
+
+- Fix Windows to return `PERMISSION_DENIED` Error even when Windows' error
+messages are internationalized, see 
+[#96](https://github.com/jorangreef/sudo-prompt/issues/96).
+
 ## [8.2.5] 2018-12-12
 
 ### Fixed
