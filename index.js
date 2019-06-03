@@ -303,15 +303,14 @@ function MacCommand(instance, end) {
     'sudo-prompt-command'
   );
   var script = [];
-  // Preserve current working directory.
+  // Preserve current working directory:
   // We do this for commands that rely on relative paths.
   // This runs in a subshell and will not change the cwd of sudo-prompt-script.
-  var cwd = Node.process.cwd();
-  script.push('cd "' + EscapeDoubleQuotes(cwd) + '"');
+  script.push('cd "' + EscapeDoubleQuotes(Node.process.cwd()) + '"');
   // Export environment variables:
   for (var key in instance.options.env) {
-    var value = EscapeDoubleQuotes(instance.options.env[key]);
-    script.push('export ' + key + '="' + value + '"');
+    var value = instance.options.env[key];
+    script.push('export ' + key + '="' + EscapeDoubleQuotes(value) + '"');
   }
   script.push(instance.command);
   script = script.join('\n');
@@ -623,8 +622,8 @@ function WindowsWriteCommandScript(instance, end) {
     // part of the environment variable value."
     // In other words, Windows assigns everything that follows the equals sign
     // to the value of the variable, whereas Unix systems ignore double quotes.
-    var value = instance.options.env[key].replace(/([<>\\|&^])/g, '^$1');
-    script.push('set ' + key + '=' + value);
+    var value = instance.options.env[key];
+    script.push('set ' + key + '=' + value.replace(/([<>\\|&^])/g, '^$1'));
   }
   script.push(instance.command);
   script = script.join('\r\n');
