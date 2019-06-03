@@ -28,7 +28,8 @@ kill(
       var command = 'echo %SUDO_PROMPT_TEST_ENV%';
       var expected = 'hello world\r\n';
     } else {
-      var command = 'echo $SUDO_PROMPT_TEST_ENV';
+      // We use double quotes to tell echo to preserve internal space:
+      var command = 'echo "$SUDO_PROMPT_TEST_ENV"';
       var expected = 'hello world\n';
     }
     console.log(
@@ -39,7 +40,7 @@ kill(
     );
     sudo.exec(command, options,
       function(error, stdout, stderr) {
-        console.log('error: ' + error);
+        console.log('error:', error);
         console.log('stdout: ' + JSON.stringify(stdout));
         console.log('stderr: ' + JSON.stringify(stderr));
         kill(
