@@ -35,7 +35,7 @@ sudo.exec('echo hello', options,
 
 `sudo-prompt` will use `process.title` as `options.name` if `options.name` is not provided. `options.name` must be alphanumeric only (spaces are supported) and at most 70 characters.
 
-Your command should not depend on any current working directory or environment variables in order to execute correctly, and you should take care to use absolute paths and not relative paths.
+`sudo-prompt` will preserve the current working directory on all platforms. Environment variables can be set explicitly using `options.env`.
 
 **`sudo-prompt.exec()` is different to `child-process.exec()` in that no child process is returned (due to platform and permissions constraints).**
 
