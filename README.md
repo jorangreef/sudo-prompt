@@ -5,11 +5,11 @@ Run a non-graphical terminal command using `sudo`, prompting the user with a gra
 ## Cross-Platform
 `sudo-prompt` provides a native OS dialog prompt on **macOS**, **Linux** and **Windows**.
 
-![macOS](./macos.png)
+![macOS](https://raw.githubusercontent.com/jorangreef/sudo-prompt/master/macos.png)
 
-![Linux](./linux.png)
+![Linux](https://raw.githubusercontent.com/jorangreef/sudo-prompt/master/linux.png)
 
-![Windows](./windows.png)
+![Windows](https://raw.githubusercontent.com/jorangreef/sudo-prompt/master/windows.png)
 
 ## Installation
 `sudo-prompt` has no external dependencies and does not require any native bindings.
