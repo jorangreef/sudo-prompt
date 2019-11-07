@@ -3,6 +3,7 @@
   "version": "9.0.0",
   "description": "Run a command using sudo, prompting the user with an OS dialog if necessary",
   "main": "index.js",
+  "types": "index.d.ts",
   "files": [
     "LICENSE",
     "README.md",
