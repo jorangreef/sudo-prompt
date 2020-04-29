@@ -1,3 +1,16 @@
+## [9.2.0] 2020-04-29
+
+### Fixed
+
+- Update TypeScript types to accommodate recent changes, see
+[#117](https://github.com/jorangreef/sudo-prompt/issues/117).
+
+## [9.1.0] 2019-11-13
+
+### Added
+
+- Add TypeScript types.
+
 ## [9.0.0] 2019-06-03
 
 ### Changed
